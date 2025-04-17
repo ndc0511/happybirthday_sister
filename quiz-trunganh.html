@@ -1,0 +1,242 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <title>Quiz Sinh Nhật Trung Anh</title>
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Pacifico|Quicksand:400,700&display=swap">
+    <style>
+        body {
+            min-height: 100vh;
+            margin: 0;
+            padding: 0;
+            background: linear-gradient(135deg, #f8ffae 0%, #43c6ac 100%);
+            font-family: 'Quicksand', Arial, sans-serif;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+        .quiz-container {
+            background: rgba(255,255,255,0.97);
+            border-radius: 24px;
+            box-shadow: 0 8px 32px #ffb6c1aa, 0 1.5px 8px #ffd70088;
+            padding: 36px 24px 30px 24px;
+            margin-top: 50px;
+            max-width: 420px;
+            width: 100%;
+            text-align: center;
+        }
+        h2 {
+            font-family: 'Pacifico', cursive;
+            color: #ff69b4;
+            font-size: 2.2em;
+            margin-bottom: 16px;
+            text-shadow: 0 0 18px #fff176, 0 2px 8px #ff69b4;
+        }
+        .question {
+            font-size: 1.2em;
+            margin: 18px 0 10px 0;
+            color: #333;
+        }
+        .answers {
+            margin-bottom: 18px;
+        }
+        .answers label {
+            display: block;
+            background: #fff8e1;
+            border-radius: 10px;
+            margin: 8px 0;
+            padding: 10px 8px;
+            cursor: pointer;
+            border: 2px solid #ffd700;
+            transition: background 0.2s, border 0.2s;
+        }
+        .answers input[type="radio"] {
+            margin-right: 10px;
+        }
+        .answers label:hover {
+            background: #fffde7;
+            border: 2px solid #ff69b4;
+        }
+        .btn {
+            margin-top: 10px;
+            padding: 12px 32px;
+            font-size: 1.1em;
+            border-radius: 12px;
+            border: none;
+            background: linear-gradient(90deg, #ff69b4 60%, #ffd700 100%);
+            color: #fff;
+            font-weight: bold;
+            cursor: pointer;
+            box-shadow: 0 2px 8px #ffd70055;
+            transition: background 0.2s, color 0.2s, transform 0.15s;
+            outline: none;
+        }
+        .btn:hover, .btn:focus {
+            background: linear-gradient(90deg, #ffd700 60%, #ff69b4 100%);
+            color: #ff69b4;
+            transform: translateY(-2px) scale(1.04);
+            box-shadow: 0 4px 16px #ff69b4aa;
+        }
+        .result {
+            font-size: 1.3em;
+            color: #4caf50;
+            margin-top: 18px;
+            font-weight: bold;
+            min-height: 40px;
+            text-shadow: 0 1px 0 #fff;
+        }
+        .confetti {
+            position: fixed;
+            left: 0; top: 0; width: 100vw; height: 100vh;
+            pointer-events: none;
+            z-index: 100;
+        }
+        .back-btn {
+            margin-top: 24px;
+        }
+    </style>
+</head>
+<body>
+    <canvas class="confetti" id="confettiQuiz"></canvas>
+    <div class="quiz-container">
+        <h2>Quiz Sinh Nhật Chị Gái</h2>
+        <form id="quizForm">
+            <div class="question">
+                1. Chị ấn tượng nhất điều gì ở em?
+            </div>
+            <div class="answers">
+                <label><input type="radio" name="q1" value="a"> Sự hài hước</label>
+                <label><input type="radio" name="q1" value="b"> Sự tốt bụng</label>
+                <label><input type="radio" name="q1" value="c"> Sự thông minh</label>
+                <label>
+                    <input type="radio" name="q1" value="other" id="q1_other_radio">
+                    Khác:
+                    <input type="text" id="q1_other" name="q1_other" style="width:60%;display:inline-block;" onfocus="document.getElementById('q1_other_radio').checked=true;">
+                </label>
+            </div>
+            <div class="question">
+                2. Chị thích nhất kỷ niệm nào với em?
+            </div>
+            <div class="answers">
+                <label><input type="radio" name="q2" value="a"> Lần đầu gặp nhau</label>
+                <label><input type="radio" name="q2" value="b"> Những lần đi chơi chung</label>
+                <label><input type="radio" name="q2" value="c"> Những lần cùng học tập</label>
+                <label>
+                    <input type="radio" name="q2" value="other" id="q2_other_radio">
+                    Khác:
+                    <input type="text" id="q2_other" name="q2_other" style="width:60%;display:inline-block;" onfocus="document.getElementById('q2_other_radio').checked=true;">
+                </label>
+            </div>
+            <div class="question">
+                3. Nếu mô tả em bằng một từ, chị sẽ chọn từ nào?
+            </div>
+            <div class="answers">
+                <label><input type="radio" name="q3" value="a"> Đáng yêu</label>
+                <label><input type="radio" name="q3" value="b"> Chăm chỉ</label>
+                <label><input type="radio" name="q3" value="c"> Lầy lội</label>
+                <label>
+                    <input type="radio" name="q3" value="other" id="q3_other_radio">
+                    Khác:
+                    <input type="text" id="q3_other" name="q3_other" style="width:60%;display:inline-block;" onfocus="document.getElementById('q3_other_radio').checked=true;">
+                </label>
+            </div>
+            <div class="question">
+                4. Chị muốn nhắn nhủ điều gì nhất cho em nhân dịp sinh nhật?
+            </div>
+            <div class="answers">
+                <label><input type="radio" name="q4" value="a"> Luôn vui vẻ và hạnh phúc</label>
+                <label><input type="radio" name="q4" value="b"> Học giỏi và thành công</label>
+                <label><input type="radio" name="q4" value="c"> Mãi là bạn tốt của nhau</label>
+                <label>
+                    <input type="radio" name="q4" value="other" id="q4_other_radio">
+                    Khác:
+                    <input type="text" id="q4_other" name="q4_other" style="width:60%;display:inline-block;" onfocus="document.getElementById('q4_other_radio').checked=true;">
+                </label>
+            </div>
+            <button type="submit" class="btn">Nộp bài</button>
+        </form>
+        <div class="result" id="result"></div>
+        <button class="btn back-btn" onclick="window.location.href='index.html'">Quay lại Trang Chủ</button>
+    </div>
+    <script>
+        // Confetti animation for quiz
+        const confettiCanvas = document.getElementById('confettiQuiz');
+        function resizeConfetti() {
+            confettiCanvas.width = window.innerWidth;
+            confettiCanvas.height = window.innerHeight;
+        }
+        window.addEventListener('resize', resizeConfetti);
+        resizeConfetti();
+        const ctx = confettiCanvas.getContext('2d');
+        let confettiPieces = [];
+        function createConfetti() {
+            confettiPieces = [];
+            for (let i = 0; i < 80; i++) {
+                confettiPieces.push({
+                    x: Math.random() * confettiCanvas.width,
+                    y: Math.random() * confettiCanvas.height,
+                    r: 6 + Math.random() * 10,
+                    c: `hsl(${Math.random()*360},90%,60%)`,
+                    s: 1 + Math.random() * 2,
+                    d: Math.random() * 2 * Math.PI
+                });
+            }
+        }
+        function drawConfetti() {
+            ctx.clearRect(0,0,confettiCanvas.width,confettiCanvas.height);
+            for (let p of confettiPieces) {
+                ctx.save();
+                ctx.beginPath();
+                ctx.arc(p.x, p.y, p.r, 0, 2*Math.PI);
+                ctx.fillStyle = p.c;
+                ctx.globalAlpha = 0.7;
+                ctx.fill();
+                ctx.restore();
+                p.x += Math.sin(p.d) * 0.6;
+                p.y += p.s;
+                if (p.y > confettiCanvas.height) {
+                    p.y = -10; p.x = Math.random() * confettiCanvas.width;
+                }
+            }
+            requestAnimationFrame(drawConfetti);
+        }
+        createConfetti();
+        drawConfetti();
+        confettiCanvas.style.display = 'none';
+
+        // Quiz logic
+        const quizForm = document.getElementById('quizForm');
+        const resultDiv = document.getElementById('result');
+        quizForm.onsubmit = function(e) {
+            e.preventDefault();
+            const answers = {
+                q1: quizForm.q1.value,
+                q2: quizForm.q2.value,
+                q3: quizForm.q3.value,
+                q4: quizForm.q4.value,
+                q1_other: quizForm.q1_other.value,
+                q2_other: quizForm.q2_other.value,
+                q3_other: quizForm.q3_other.value,
+                q4_other: quizForm.q4_other.value
+            };
+            let correct = 0;
+            if (answers.q1) correct++;
+            if (answers.q2) correct++;
+            if (answers.q3) correct++;
+            if (answers.q4) correct++;
+            if (correct === 4) {
+                let customAnswers = "";
+                if (answers.q1 === "other" && answers.q1_other.trim()) customAnswers += `<br><b>Câu 1:</b> ${answers.q1_other}`;
+                if (answers.q2 === "other" && answers.q2_other.trim()) customAnswers += `<br><b>Câu 2:</b> ${answers.q2_other}`;
+                if (answers.q3 === "other" && answers.q3_other.trim()) customAnswers += `<br><b>Câu 3:</b> ${answers.q3_other}`;
+                if (answers.q4 === "other" && answers.q4_other.trim()) customAnswers += `<br><b>Câu 4:</b> ${answers.q4_other}`;
+                resultDiv.innerHTML = "🎉 Cảm ơn chị đã trả lời! Chị có thể chụp màn hình kết quả này cho em xem được không =))))<br>Chúc chị sinh nhật thật vui vẻ và luôn hạnh phúc bên em! 🎂" + customAnswers;
+                confettiCanvas.style.display = 'block';
+                setTimeout(() => { confettiCanvas.style.display = 'none'; }, 3500);
+            } else {
+                resultDiv.innerHTML = "Chị hãy trả lời hết các câu hỏi nhé! 😅";
+            }
+        };
+    </script>
+</body>
+</html>

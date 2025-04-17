@@ -1,0 +1,232 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <title>Photobooth Sinh Nhật</title>
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Pacifico|Quicksand:400,700&display=swap">
+    <style>
+        body {
+            min-height: 100vh;
+            margin: 0;
+            padding: 0;
+            background: linear-gradient(135deg, #f8ffae 0%, #43c6ac 100%);
+            font-family: 'Quicksand', Arial, sans-serif;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+        .photobooth-container {
+            background: rgba(255,255,255,0.97);
+            border-radius: 24px;
+            box-shadow: 0 8px 32px #ffb6c1aa, 0 1.5px 8px #ffd70088;
+            padding: 36px 24px 30px 24px;
+            margin-top: 40px;
+            max-width: 480px;
+            width: 100%;
+            text-align: center;
+        }
+        h2 {
+            font-family: 'Pacifico', cursive;
+            color: #ff69b4;
+            font-size: 2em;
+            margin-bottom: 18px;
+            text-shadow: 0 0 18px #fff176, 0 2px 8px #ff69b4;
+        }
+        #video, #canvas {
+            border-radius: 18px;
+            box-shadow: 0 2px 10px #ffd70055;
+            width: 320px;
+            height: 240px;
+            background: #eee;
+            margin-bottom: 10px;
+        }
+        .controls {
+            margin: 10px 0 18px 0;
+        }
+        .btn {
+            margin: 8px 6px;
+            padding: 10px 24px;
+            font-size: 1.1em;
+            border-radius: 12px;
+            border: none;
+            background: linear-gradient(90deg, #ff69b4 60%, #ffd700 100%);
+            color: #fff;
+            font-weight: bold;
+            cursor: pointer;
+            box-shadow: 0 2px 8px #ffd70055;
+            transition: background 0.2s, color 0.2s, transform 0.15s;
+            outline: none;
+        }
+        .btn:hover, .btn:focus {
+            background: linear-gradient(90deg, #ffd700 60%, #ff69b4 100%);
+            color: #ff69b4;
+            transform: translateY(-2px) scale(1.04);
+            box-shadow: 0 4px 16px #ff69b4aa;
+        }
+        .sticker-list {
+            margin: 10px 0 18px 0;
+        }
+        .sticker {
+            width: 40px;
+            height: 40px;
+            margin: 0 6px;
+            cursor: pointer;
+            border-radius: 8px;
+            border: 2px solid transparent;
+            transition: border 0.2s;
+        }
+        .sticker.selected {
+            border: 2px solid #ff69b4;
+        }
+        .back-btn {
+            margin-top: 18px;
+        }
+    </style>
+</head>
+<body>
+    <div class="photobooth-container">
+        <h2>Photobooth Sinh Nhật</h2>
+        <video id="video" autoplay playsinline></video>
+        <div id="multi-canvas-list" style="display:none; margin-bottom:10px;"></div>
+        <canvas id="canvas" width="320" height="240" style="display:none"></canvas>
+        <div id="countdown" style="font-size:2em; color:#ff69b4; font-weight:bold; margin-bottom:10px; display:none;"></div>
+        <div class="controls">
+            <button class="btn" id="captureBtn">Chụp 5 Ảnh</button>
+            <button class="btn" id="downloadBtn" style="display:none">Tải 5 Ảnh</button>
+            <button class="btn" id="retakeBtn" style="display:none">Chụp Lại</button>
+        </div>
+        <div class="sticker-list">
+            <span>Chọn sticker:</span>
+            <img src="https://cdn.jsdelivr.net/gh/twitter/twemoji@14.0.2/assets/72x72/1f382.png" class="sticker" data-sticker="cake">
+            <img src="https://cdn.jsdelivr.net/gh/twitter/twemoji@14.0.2/assets/72x72/1f389.png" class="sticker" data-sticker="party">
+            <img src="https://cdn.jsdelivr.net/gh/twitter/twemoji@14.0.2/assets/72x72/1f970.png" class="sticker" data-sticker="heart">
+            <img src="https://cdn.jsdelivr.net/gh/twitter/twemoji@14.0.2/assets/72x72/1f388.png" class="sticker" data-sticker="balloon">
+        </div>
+        <div class="back-btn">
+            <button class="btn" onclick="window.location.href='index.html'">Quay lại Trang Chủ</button>
+        </div>
+    </div>
+    <script>
+        // Webcam setup
+        const video = document.getElementById('video');
+        const canvas = document.getElementById('canvas');
+        const multiCanvasList = document.getElementById('multi-canvas-list');
+        const captureBtn = document.getElementById('captureBtn');
+        const downloadBtn = document.getElementById('downloadBtn');
+        const retakeBtn = document.getElementById('retakeBtn');
+        const countdown = document.getElementById('countdown');
+        let stream = null;
+
+        // Sticker logic
+        let selectedSticker = null;
+        let stickerImg = null;
+        const stickers = document.querySelectorAll('.sticker');
+        stickers.forEach(sticker => {
+            sticker.onclick = function(e) {
+                e.preventDefault();
+                stickers.forEach(s => s.classList.remove('selected'));
+                this.classList.add('selected');
+                selectedSticker = this.src;
+            };
+            // Fix: allow selecting sticker before chụp lại
+            sticker.onmousedown = function(e) { e.preventDefault(); };
+        });
+
+        // Start webcam
+        async function startWebcam() {
+            try {
+                stream = await navigator.mediaDevices.getUserMedia({ video: true });
+                video.srcObject = stream;
+            } catch (err) {
+                alert('Không thể truy cập camera!');
+            }
+        }
+        startWebcam();
+
+        // Multi-capture logic
+        let capturedCanvases = [];
+        captureBtn.onclick = async function() {
+            capturedCanvases = [];
+            multiCanvasList.innerHTML = '';
+            multiCanvasList.style.display = '';
+            video.style.display = '';
+            canvas.style.display = 'none';
+            captureBtn.style.display = 'none';
+            downloadBtn.style.display = 'none';
+            retakeBtn.style.display = 'none';
+            countdown.style.display = '';
+
+            for (let i = 0; i < 5; i++) {
+                // Đếm ngược trước mỗi lần chụp (trừ lần đầu)
+                if (i !== 0) {
+                    for (let t = 3; t > 0; t--) {
+                        countdown.textContent = `Chụp sau ${t}...`;
+                        await new Promise(res => setTimeout(res, 1000));
+                    }
+                } else {
+                    countdown.textContent = "Chuẩn bị chụp...";
+                    await new Promise(res => setTimeout(res, 700));
+                }
+                countdown.textContent = "📸";
+                await new Promise(res => setTimeout(res, 400));
+                // Tạo canvas mới cho mỗi ảnh
+                let c = document.createElement('canvas');
+                c.width = 320;
+                c.height = 240;
+                let ctx = c.getContext('2d');
+                ctx.drawImage(video, 0, 0, c.width, c.height);
+                // Vẽ sticker nếu có
+                if (selectedSticker) {
+                    let img = new window.Image();
+                    img.crossOrigin = "anonymous";
+                    await new Promise(ok => {
+                        img.onload = () => {
+                            ctx.drawImage(img, c.width-60, c.height-60, 50, 50);
+                            ok();
+                        };
+                        img.src = selectedSticker;
+                    });
+                }
+                capturedCanvases.push(c);
+                // Hiển thị ảnh vừa chụp
+                let thumb = c.cloneNode();
+                thumb.getContext('2d').drawImage(c, 0, 0);
+                thumb.style.margin = "4px";
+                thumb.style.borderRadius = "8px";
+                thumb.style.boxShadow = "0 2px 8px #ffd70055";
+                multiCanvasList.appendChild(thumb);
+            }
+            countdown.style.display = 'none';
+            video.style.display = 'none';
+            downloadBtn.style.display = '';
+            retakeBtn.style.display = '';
+        };
+
+        // Download all photos as zip
+        downloadBtn.onclick = async function() {
+            for (let i = 0; i < capturedCanvases.length; i++) {
+                const link = document.createElement('a');
+                link.download = `photobooth_${i+1}.png`;
+                link.href = capturedCanvases[i].toDataURL('image/png');
+                document.body.appendChild(link);
+                link.click();
+                document.body.removeChild(link);
+                await new Promise(res => setTimeout(res, 300));
+            }
+        };
+
+        // Retake photos
+        retakeBtn.onclick = function() {
+            multiCanvasList.innerHTML = '';
+            multiCanvasList.style.display = 'none';
+            video.style.display = '';
+            canvas.style.display = 'none';
+            captureBtn.style.display = '';
+            downloadBtn.style.display = 'none';
+            retakeBtn.style.display = 'none';
+            countdown.style.display = 'none';
+        };
+    </script>
+</body>
+</html>
+``` 

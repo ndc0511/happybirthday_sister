@@ -1,0 +1,21 @@
+{
+  "name": "birthday-greeting-web",
+  "version": "1.0.0",
+  "description": "A simple birthday greeting website for my sister.",
+  "main": "src/script.js",
+  "scripts": {
+    "start": "live-server public",
+    "build": "echo 'Build step not defined'",
+    "test": "echo 'No tests defined'"
+  },
+  "keywords": [
+    "birthday",
+    "greeting",
+    "web"
+  ],
+  "author": "Your Name",
+  "license": "MIT",
+  "dependencies": {
+    "live-server": "^1.2.1"
+  }
+}

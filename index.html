@@ -1,0 +1,334 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Chúc Mừng Sinh Nhật</title>
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Pacifico|Quicksand:400,700&display=swap">
+    <link rel="stylesheet" href="../src/styles.css">
+    <style>
+        body {
+            min-height: 100vh;
+            margin: 0;
+            padding: 0;
+            background: linear-gradient(135deg, #f8ffae 0%, #43c6ac 100%);
+            position: relative;
+            font-family: 'Quicksand', Arial, sans-serif;
+            overflow-x: hidden;
+        }
+        .confetti-bg {
+            position: fixed;
+            left: 0; top: 0; width: 100vw; height: 100vh;
+            pointer-events: none;
+            z-index: 0;
+        }
+        .container {
+            max-width: 600px;
+            margin: 60px auto 30px auto;
+            background: rgba(255,255,255,0.95);
+            border-radius: 30px;
+            padding: 40px 20px 50px 20px;
+            box-shadow: 0 8px 40px 0 rgba(0,0,0,0.18), 0 1.5px 8px 0 #ffb6c1;
+            position: relative;
+            z-index: 2;
+        }
+        h1 {
+            font-family: 'Pacifico', cursive;
+            font-size: 3.2em;
+            color: #ff69b4;
+            text-shadow: 0 0 18px #fff176, 0 2px 8px #ff69b4;
+            margin-bottom: 10px;
+            letter-spacing: 2px;
+            animation: glow 2s infinite alternate;
+        }
+        @keyframes glow {
+            from { text-shadow: 0 0 18px #fff176, 0 2px 8px #ff69b4; }
+            to   { text-shadow: 0 0 32px #ffd700, 0 2px 16px #ff69b4; }
+        }
+        p {
+            font-size: 1.4em;
+            color: #444;
+            margin-bottom: 30px;
+            font-weight: 500;
+            text-shadow: 0 1px 0 #fff;
+        }
+        .balloons {
+            display: flex;
+            justify-content: center;
+            align-items: flex-end;
+            margin-bottom: 30px;
+            min-height: 120px;
+            gap: 10px;
+        }
+        .balloon {
+            width: 90px;
+            height: auto;
+            margin: 0 10px;
+            animation: float 4s ease-in-out infinite;
+            filter: drop-shadow(0 8px 16px #ffb6c1);
+            transition: transform 0.2s;
+        }
+        .balloon:hover {
+            transform: scale(1.08) rotate(-6deg);
+            filter: drop-shadow(0 12px 24px #ff69b4);
+        }
+        .balloon:nth-child(1) { animation-delay: 0s; }
+        .balloon:nth-child(2) { animation-delay: 1.2s; }
+        .balloon:nth-child(3) { animation-delay: 2.1s; }
+        @keyframes float {
+            0% { transform: translateY(0) scale(1); }
+            30% { transform: translateY(-30px) scale(1.04) rotate(-2deg);}
+            50% { transform: translateY(-50px) scale(1.08) rotate(2deg);}
+            70% { transform: translateY(-30px) scale(1.04) rotate(-2deg);}
+            100% { transform: translateY(0) scale(1);}
+        }
+        button {
+            margin: 10px 8px;
+            padding: 13px 32px;
+            font-size: 1.15em;
+            border-radius: 12px;
+            border: none;
+            background: linear-gradient(90deg, #ff69b4 60%, #ffd700 100%);
+            color: #fff;
+            font-weight: bold;
+            cursor: pointer;
+            box-shadow: 0 2px 8px #ffd70055;
+            transition: background 0.2s, color 0.2s, transform 0.15s;
+            outline: none;
+        }
+        button:hover, button:focus {
+            background: linear-gradient(90deg, #ffd700 60%, #ff69b4 100%);
+            color: #ff69b4;
+            transform: translateY(-2px) scale(1.04);
+            box-shadow: 0 4px 16px #ff69b4aa;
+        }
+        #confetti {
+            position: fixed;
+            left: 0; top: 0; width: 100vw; height: 100vh;
+            pointer-events: none;
+            z-index: 10;
+        }
+        /* Gallery Modal */
+        #galleryModal {
+            display:none; position:fixed; top:0; left:0; width:100vw; height:100vh;
+            background:rgba(0,0,0,0.7); z-index:200; align-items:center; justify-content:center;
+        }
+        #galleryModal > div {
+            background:#fff; padding:20px; border-radius:16px; position:relative;
+            max-width:90vw; max-height:90vh; box-shadow:0 4px 24px #ff69b4aa;
+        }
+        #galleryImg {
+            max-width:80vw; max-height:70vh; display:block; margin:auto; border-radius:10px; box-shadow:0 2px 12px #ffd70088;
+        }
+        #closeGallery {
+            position:absolute; top:10px; right:20px; cursor:pointer; font-size:2rem; color:#ff69b4;
+            transition: color 0.2s;
+        }
+        #closeGallery:hover { color: #ffd700; }
+        @media (max-width: 700px) {
+            .container { max-width: 98vw; padding: 10vw 2vw 16vw 2vw; }
+            h1 { font-size: 2em; }
+            .balloon { width: 60px; }
+            button { font-size: 1em; padding: 10px 12vw; }
+        }
+    </style>
+</head>
+<body>
+    <canvas class="confetti-bg" id="confettiBg"></canvas>
+    <div class="container">
+        <h1>Chúc Mừng Sinh Nhật Chị!</h1>
+        <p>Chúc chị có một ngày sinh nhật thật vui vẻ và hạnh phúc!<br>
+        Mong mọi điều tốt đẹp, may mắn và yêu thương luôn bên chị!</p>
+        <div class="balloons" id="balloonArea"></div>
+        <button id="celebrateBtn">🎉 Chúc Mừng!</button>
+        <button id="galleryBtn">📷 Xem Ảnh</button>
+        <button id="puzzleBtn">🧩 Chơi Ghép Ảnh</button>
+        <button id="quizBtn">❓ Quiz Trung Anh</button>
+        <button id="photoboothBtn">📸 Photobooth</button>
+        <div id="confetti" class="hidden"></div>
+        <!-- Gallery Modal -->
+        <div id="galleryModal">
+            <div>
+                <span id="closeGallery">&times;</span>
+                <img id="galleryImg" src="" alt="Ảnh">
+                <div style="text-align:center; margin-top:10px;">
+                    <button id="prevImg">Trước</button>
+                    <button id="nextImg">Sau</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <script>
+        // Confetti background animation
+        const confettiBg = document.getElementById('confettiBg');
+        function resizeConfetti() {
+            confettiBg.width = window.innerWidth;
+            confettiBg.height = window.innerHeight;
+        }
+        window.addEventListener('resize', resizeConfetti);
+        resizeConfetti();
+        // Draw confetti
+        const ctx = confettiBg.getContext('2d');
+        const confettiPieces = [];
+        for (let i = 0; i < 80; i++) {
+            confettiPieces.push({
+                x: Math.random() * confettiBg.width,
+                y: Math.random() * confettiBg.height,
+                r: 6 + Math.random() * 10,
+                c: `hsl(${Math.random()*360},90%,60%)`,
+                s: 1 + Math.random() * 2,
+                d: Math.random() * 2 * Math.PI
+            });
+        }
+        function drawConfetti() {
+            ctx.clearRect(0,0,confettiBg.width,confettiBg.height);
+            for (let p of confettiPieces) {
+                ctx.save();
+                ctx.beginPath();
+                ctx.arc(p.x, p.y, p.r, 0, 2*Math.PI);
+                ctx.fillStyle = p.c;
+                ctx.globalAlpha = 0.7;
+                ctx.fill();
+                ctx.restore();
+                p.x += Math.sin(p.d) * 0.6;
+                p.y += p.s;
+                if (p.y > confettiBg.height) {
+                    p.y = -10; p.x = Math.random() * confettiBg.width;
+                }
+            }
+            requestAnimationFrame(drawConfetti);
+        }
+        drawConfetti();
+
+        // Hiệu ứng bóng bay SVG động thay cho ảnh
+        function createBalloon(color, left, delay, duration, scale) {
+            const balloon = document.createElementNS("http://www.w3.org/2000/svg", "svg");
+            balloon.setAttribute("width", 70 * scale);
+            balloon.setAttribute("height", 120 * scale);
+            balloon.style.position = "absolute";
+            balloon.style.left = left + "%";
+            balloon.style.bottom = "-120px";
+            balloon.style.zIndex = 1;
+            balloon.style.opacity = 0.92;
+            balloon.style.animation = `balloon-float ${duration}s cubic-bezier(.4,.1,.6,1) infinite`;
+            balloon.style.animationDelay = delay + "s";
+            balloon.innerHTML = `
+                <ellipse cx="${35*scale}" cy="${50*scale}" rx="${28*scale}" ry="${40*scale}" fill="${color}" />
+                <ellipse cx="${35*scale}" cy="${90*scale}" rx="${10*scale}" ry="${8*scale}" fill="#fff" opacity="0.18"/>
+                <rect x="${32*scale}" y="${90*scale}" width="${6*scale}" height="${14*scale}" rx="${2*scale}" fill="#b5651d"/>
+                <path d="M${35*scale},${104*scale} Q${35*scale-10*scale},${120*scale} ${35*scale},${120*scale}" stroke="#b5651d" stroke-width="${2*scale}" fill="none"/>
+            `;
+            return balloon;
+        }
+
+        function renderBalloons() {
+            const area = document.getElementById('balloonArea');
+            area.innerHTML = '';
+            area.style.position = 'relative';
+            area.style.height = '140px';
+            area.style.marginBottom = '30px';
+            const balloons = [
+                { color: "#ff69b4", left: 20, delay: 0, duration: 5, scale: 1 },
+                { color: "#ffd700", left: 50, delay: 1.2, duration: 6, scale: 1.1 },
+                { color: "#43c6ac", left: 75, delay: 2.1, duration: 5.5, scale: 0.95 }
+            ];
+            for (const b of balloons) {
+                area.appendChild(createBalloon(b.color, b.left, b.delay, b.duration, b.scale));
+            }
+        }
+
+        // CSS keyframes cho hiệu ứng bóng bay
+        const style = document.createElement('style');
+        style.innerHTML = `
+        @keyframes balloon-float {
+            0% { transform: translateY(0) scale(1); opacity: 0.92;}
+            10% { opacity: 1;}
+            50% { transform: translateY(-60px) scale(1.04) rotate(-2deg);}
+            80% { opacity: 1;}
+            100% { transform: translateY(-120px) scale(1.08) rotate(2deg); opacity: 0.7;}
+        }
+        `;
+        document.head.appendChild(style);
+
+        renderBalloons();
+
+        // Confetti effect
+        const btn = document.getElementById('celebrateBtn');
+        const confetti = document.getElementById('confetti');
+        btn.addEventListener('click', () => {
+            confetti.classList.remove('hidden');
+            confetti.innerHTML = '';
+            for (let i = 0; i < 80; i++) {
+                const div = document.createElement('div');
+                div.style.position = 'absolute';
+                div.style.left = Math.random() * 100 + 'vw';
+                div.style.top = '-20px';
+                div.style.width = '10px';
+                div.style.height = '18px';
+                div.style.background = `hsl(${Math.random()*360},90%,60%)`;
+                div.style.opacity = 0.8;
+                div.style.borderRadius = '3px';
+                div.style.transform = `rotate(${Math.random()*360}deg)`;
+                div.style.transition = 'top 2.2s cubic-bezier(.17,.67,.83,.67)';
+                confetti.appendChild(div);
+                setTimeout(() => {
+                    div.style.top = (80 + Math.random()*20) + 'vh';
+                }, 10);
+            }
+            setTimeout(() => {
+                confetti.classList.add('hidden');
+                confetti.innerHTML = '';
+            }, 2500);
+        });
+
+        // Gallery logic
+        const galleryBtn = document.getElementById('galleryBtn');
+        const galleryModal = document.getElementById('galleryModal');
+        const galleryImg = document.getElementById('galleryImg');
+        const closeGallery = document.getElementById('closeGallery');
+        const prevImg = document.getElementById('prevImg');
+        const nextImg = document.getElementById('nextImg');
+        // Đường dẫn ảnh gallery (ảnh đặt trong src/)
+        const galleryImages = [
+            '../src/anh1.jpg',
+            '../src/anh2.jpg',
+            '../src/anh3.jpg',
+            '../src/anh4.jpg',
+            '../src/anh5.jpg',
+            '../src/anh6.jpg'
+        ];
+        let currentImg = 0;
+        galleryBtn.onclick = () => {
+            galleryModal.style.display = 'flex';
+            galleryImg.src = galleryImages[currentImg];
+        };
+        closeGallery.onclick = () => {
+            galleryModal.style.display = 'none';
+        };
+        prevImg.onclick = () => {
+            currentImg = (currentImg - 1 + galleryImages.length) % galleryImages.length;
+            galleryImg.src = galleryImages[currentImg];
+        };
+        nextImg.onclick = () => {
+            currentImg = (currentImg + 1) % galleryImages.length;
+            galleryImg.src = galleryImages[currentImg];
+        };
+        galleryModal.onclick = (e) => {
+            if (e.target === galleryModal) galleryModal.style.display = 'none';
+        };
+
+        // Puzzle game button
+        document.getElementById('puzzleBtn').onclick = () => {
+            window.location.href = 'puzzle.html';
+        };
+        // Quiz Trung Anh button
+        document.getElementById('quizBtn').onclick = () => {
+            window.location.href = 'quiz-trunganh.html';
+        };
+        // Photobooth button
+        document.getElementById('photoboothBtn').onclick = () => {
+            window.location.href = 'photobooth.html';
+        };
+    </script>
+</body>
+</html>
